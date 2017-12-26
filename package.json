@@ -31,13 +31,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/akashgoswami/ipm.git"
+    "url": "git+https://github.com/bealox/iota-fd.git"
   },
   "bin": {
     "iota-pm": "./index.js"
   },
   "bugs": {
-    "url": "https://github.com/akashgoswami/ipm/issues"
+    "url": "https://github.com/bealox/iota-fd/issues"
   },
-  "homepage": "https://github.com/akashgoswami/ipm#readme"
+  "homepage": "https://github.com/bealox/iota-fd#readme"
 }
