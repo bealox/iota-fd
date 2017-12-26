@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Login</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<body>
+
+    <div id="aside" class="app-aside modal fade nav-expand">
+        <div class="left navside black dk" layout="column">
+            <div class="navbar no-radius">
+                <!-- brand -->
+                <a class="navbar-brand">
+
+
+                    <a href="http://iota.org/" target="_blank">
+                        <span class="m-t-lg">
+                            <img src="/img/logo.png" alt="..." class="w-60 r">
+                        </span>
+                    </a>
+                    <h5 class="text-center">Peer Manager</h5>
+
+
+
+                </a>
+                <!-- / brand -->
+            </div>
+            <div flex-no-shrink="">
+            </div>
+            <div flex="" class="hide-scroll mt-20">
+                <nav class="scroll nav-stacked nav-active-primary text-center">
+                    <h6>
+                        <a class="h6" href="https://github.com/akashgoswami/ipm" target="_blank">Github</a>
+                    </h6>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li>
+                <a v-link="'home'">Home</a>
+            </li>
+            <li>
+                <a v-link="'login'">Login</a>
+            </li>
+            <li>
+                <a v-link="'signup'">Sign Up</a>
+            </li>
+            <li>
+                <a v-link="'secretquote'">Secret Quote</a>
+            </li>
+            <li>
+                <a v-link="'login'">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <router-view></router-view>
+</div>
+
+</html>
