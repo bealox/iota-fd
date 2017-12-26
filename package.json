@@ -1,7 +1,7 @@
 {
-  "name": "iota-pm",
-  "version": "1.1.0",
-  "description": "An IOTA IRI peer manager",
+  "name": "iota-fd",
+  "version": "1.0.0",
+  "description": "IOTA Friend - Friendly Peer Manager",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,7 +10,7 @@
     "iota",
     "peer"
   ],
-  "author": "Akash Goswami",
+  "author": "Andy Hsieh",
   "license": "MIT",
   "dependencies": {
     "async": "^2.5.0",
