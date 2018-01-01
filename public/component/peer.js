@@ -1,39 +1,37 @@
 var Template =`
 
-      <div class="col-sm-3 min-h-500">   
-         
-        <section class="panel" v-bind:class="[deadPeer ? 'panel-danger' : 'panel-default']" > 
-            <header class="panel-heading bg-light no-border"> 
-                <div class="clearfix"> 
-                <div class="clear"> 
-                <a href="#" class="btn btn-xs btn-rounded btn-danger m-xs pull-right" v-on:click="removePeer">X</a>
-              
-               
-                <input class="h5" v-model="state.tag" v-on:keyup.enter="editTag" v-bind:class="[updating ? '' : 'tag-disabled']" :disabled="updating == 1 ? false : true" v-bind:size="state.tag.length"> 
+	  <div class='item card' v-bind:class="[deadPeer ? 'dead' : 'live']">
 
-                <i v-on:click="editTag" v-bind:class="[updating ? 'fa fa-2x fa-check text-success' : 'fa fa-2x fa-pencil text-black-lt']"></i>
 
-				<div class="text-info text-md">{{state.connectionType}}://{{state.address}}</div>
-				<div><span :class="flagClass"></span>{{state.country}}</div>
-                
-                </div> 
-                </div> 
-                </header> 
-                 <div class="spark">
-                 <canvas :id="id" width="200" height="180" ></canvas>
-                 </div>
-                
-                <div class="list-group-alt no-radius">
-            
+	  <span :class="flagClass" :title="state.country"></span>
+	   <input class="input_field h5" v-model="state.tag" v-on:keyup.enter="editTag" v-bind:class="[updating ? 'tag-updating' : 'tag-disabled']" :disabled="updating == 1 ? false : true" v-bind:size="state.tag.length"> 
+		   <i v-on:click="editTag" v-bind:class="[updating ? 'fa fa-2x fa-check text-success' : 'fa fa-2x fa-pencil text-black-lt']"></i>
+		  <div class="text-info text-md">{{state.connectionType}}://{{state.address}}</div>
+	  <a href="#" class="remove btn btn-xs h5 btn-rounded btn-danger m-xs" v-on:click="removePeer">X</a>
+	  
+			<div style="height: 200px; max-width: 100%">
+			<div id="parent">
+                <canvas :id="id" height="200px"></canvas>
+			</div>
+			</div>
+
+
+		   <div class="list-group-alt no-radius">
                 <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfSentTransactions}}</span>Sent Transactions</div>
                 <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfAllTransactions}}</span>Received Transactions</div>
                 <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfNewTransactions}}</span>Received New Transactions</div>
                 <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfRandomTransactionRequests}}</span>Received Random Transaction Requests</div>
                 <div class="list-group-item" href="#"> <span class="badge bg-success">{{state.numberOfInvalidTransactions}}</span>Received Invalid Transactions</div>
-                </div>
-                </section>
-        
-       </div>
+            </div>
+		   
+		  
+		   
+			
+
+
+			
+			
+	  </div>
 `;
 
 
@@ -61,15 +59,40 @@ var peer = Vue.component('peer', {
 		//this.chartData.labels.push("");
 		//this.chartData.datasets.data.push(1);
 		//this.chartData = {};
-		var ctx = document.getElementById(this._uid).getContext('2d');
+		var canvas = document.getElementById(this._uid);
+		var ctx = canvas.getContext('2d');
+		
+		
 		this.myChart = new Chart(ctx, {
 			type: 'line',
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				lineTension: 0,
+				scales:
+					{
+						xAxes: [{
+							display: true
+						}],
+						yAxes: [{
+							gridLines: {
+								color: 'rgba(72,82,72, 0.8)',
+							}
+						}]
+					},
+				legend: {
+					display: true,
+					labels: {
+						boxWidth: 10
+					}
+				}
+
+			},
 			data: { 
 				labels: [],
 				datasets: [
 					{
 						label: 'Rec TX',
-              
 						data: []
 					},
 					{
@@ -84,24 +107,10 @@ var peer = Vue.component('peer', {
 					},
                 
 				]
-			},
-			options: {
-				responsive: true, maintainAspectRatio: false, lineTension: 0,
-				scales:
-        {
-        	xAxes: [{
-        		display: false
-        	}]
-        },
-				legend: {
-					display: true,
-					labels: {
-						boxWidth :10
-					}
-				}        
-        
 			}
+		
 		});
+
 	},
 	watch: {
 		// whenever question changes, this function will run
@@ -130,14 +139,14 @@ var peer = Vue.component('peer', {
 				text: 'Removing Peer ' +  this.state.connectionType +'://'+this.state.address + '!',
 				type: 'warning',
 				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
+				confirmButtonColor: '#6bff45',
+				cancelButtonColor: '#FF456B',
 				confirmButtonText: 'Yes, delete peer!'
 			}).then(function () {
 				socket.emit('removePeer', { address: this.state.connectionType +'://'+this.state.address });
 				swal(
 					'Deleted!',
-					'Your peer has been deleted. Please also update your IRI config file (if required)' ,
+					'Your peer has been deleted. IOTA-Fd updated the config file' ,
 					'success'
 				);
 				//this.$destroy();

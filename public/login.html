@@ -11,60 +11,79 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
         crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <link rel="stylesheet" type="text/css" href="app.css">
     <link rel="stylesheet" type="text/css" href="custom.css">
 </head>
 
+<script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
 <body>
-
-    <div id="aside" class="app-aside modal fade nav-expand">
-        <div class="left navside black dk" layout="column">
-            <div class="navbar no-radius">
-                <!-- brand -->
-                <a class="navbar-brand">
-
-
-                    <a href="http://iota.org/" target="_blank">
-                        <span class="m-t-lg">
-                            <img src="/img/logo.png" alt="..." class="w-60 r">
-                        </span>
-                    </a>
-                    <h5 class="text-center">Peer Manager</h5>
-
-
-
-                </a>
-                <!-- / brand -->
-            </div>
-            <div flex-no-shrink="">
-            </div>
-            <div flex="" class="hide-scroll mt-20">
-                <nav class="scroll nav-stacked nav-active-primary text-center">
-                    <h6>
-                        <a class="h6" href="https://github.com/akashgoswami/ipm" target="_blank">Github</a>
-                    </h6>
-                </nav>
-            </div>
-        </div>
-    </div>
-
-
-
-
-<div class="jumbotron">
+    
+        
+<div id="app" class="jumbotron">
+<div id="notification" > <span class="alert" v-bind:class="{ 'alert-danger': notification }"> {{notification}} </span></div>
     <div class="container">
-        <span class="glyphicon glyphicon-list-alt"></span>
-        <h2>Calendar</h2>
+        <div class="m-t-lg">
+            <img src="/img/logo.png" alt="..." class="w-60 r">
+        </div>
+        <h2>Hi, My Friend</h2>
         <div class="box">
-            <input type="text" placeholder="username">
-            <input type="password" placeholder="password">
+            <form v-on:submit="auth" method="POST">
+            <input name="username" type="text" placeholder="username" v-model="username">
+            <input name="password" type="password" placeholder="password" v-model="password">
             <button class="btn btn-default full-width">
                 <span class="glyphicon glyphicon-ok"></span>
             </button>
+            </form>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+
+    // get route url with blade 
+    var socket = io();
+
+
+    function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    socket.on('LoginResult', function (info) {
+            if(info.status === "failed"){
+                Vue.set(app, "notification", "Invliad Login");
+            }else{
+                setCookie("iota-fd", info.uid, 1);
+                window.location.href = '/';
+            }
+    });
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            username:"",
+            password:"",
+            notification: "",
+            hasNotification: false
+        },
+        methods: {
+            auth: function (event) {
+                event.preventDefault();               
+                  if (this.username == "" || this.password == "") {
+                    this.notification = "Invalid Login.";
+                    this.hasNotification = true;
+                } 
+                var payload = { username: this.username, password: this.password }
+                socket.emit("Login", payload);
+            }
+        }
+    });
+</script>
 
 </html>

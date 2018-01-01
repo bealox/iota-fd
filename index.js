@@ -8,31 +8,25 @@
 
 let express = require('express');
 let app = express();
+let cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
 let server = require('http').Server(app);
 // enables real - time bidirectional event - based communication.It consists in:
 let io = require('socket.io')(server);
 let minimist = require('minimist');
-let jsonfile = require('jsonfile');
 let IOTAConfig = require('./lib/iota');
 let helper = require('./lib/helper');
 const config = require('./lib/config.js');
 
 
+process.on('unhandledRejection', (err) => {
+	console.log('Unhandled Rejection at: ' + err.stack);
+});
 
-let readConfig = () => {
-	return new Promise((resolve, reject) => {
-		jsonfile.readFile(config.configFilePath, function (err, obj) {
-			if (err)
-				reject(err);
-			else if (obj)
-				resolve(obj);
-		});
-	}); 	
-}; 
-
-let safeReadConfig = require('./lib/helper').handleError(readConfig);
-
-//good lib
 let argv = minimist(process.argv.slice(2), {
 	string: [ 'iri', 'port' ],   // you want this to be treated as string
 	alias: {
@@ -48,14 +42,6 @@ let argv = minimist(process.argv.slice(2), {
 //adding a debug feature
 let debug = argv.debug;
 
-//ask express to use the static files in public folder.
-//__dirname is a global let , the directory name of the current module
-app.use(express.static(__dirname+'/public'));
-
-app.get('/login', async (req, res) =>{
-	res.sendFile(__dirname + '/public/login.html');
-});
-
 //if help is true , print help
 if (argv.help) printHelp();
 
@@ -63,7 +49,7 @@ if (argv.help) printHelp();
 function printHelp()
 {
 
-	console.log('IPM:    IOTA Eagle Peer Manager');
+	console.log('IPM:    IOTA Friend - let take ');
 	console.log('        Manage and monitor IOTA peer health status in beautiful dashboard.');    
 
 	console.log('Usage:');        
@@ -88,7 +74,10 @@ if(argv.version){
 
 
 async function main(){
-	let configObject = await safeReadConfig();
+
+	let configObject = await helper.safeReadConfig();
+	
+	
 
 	if (argv.init) {
 
@@ -103,13 +92,45 @@ async function main(){
 		
 		let iota = new IOTAConfig(configObject);
 
-		// fired upon a connection from client
+
+		/** 
+		 *  routes for the app :D
+		*/
+		app.use(express.static(__dirname + '/public'));
+
+		app.get('/login', async (req, res) => {
+			res.sendFile(__dirname + '/public/login.html');
+		});
+
+		app.get('/logout', async (req, res) => {
+			res.clearCookie('iota-fd');
+			res.redirect('/');
+		});
+
+		/** 
+		 * fired upon a connection from client
+		*/
 		io.on('connection', function (s) {
+			// name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+			//clear the cookie if the iota-fd vlue is incorrect
+			let logged = function(s){
+				let cookie = require('cookie').parse(s.handshake.headers.cookie);
+				if(cookie['iota-fd']){
+					if(cookie['iota-fd'] === iota.config.uid)
+						return true;	
+					else
+						return false;
+				}		
+				return false;
+			};
+
 
 			iota.sockets.push(s);
 
 			//send out or give node info
-			s.emit('nodeInfo', iota.gNodeInfo);
+			s.emit('init', { loggedInfo: logged(s) });
+			// s.emit('nodeInfo', iota.gNodeInfo);
+			
 			//update config info
 			iota.updatePeerInfo();
 
@@ -131,9 +152,9 @@ async function main(){
 							console.error(error);
 							s.emit('result', error.message);
 						} else {
-							s.emit('result', 'Peer added Successfully. Please also update your IRI config file (if required)');
+							s.emit('result', 'Peer added Successfully.');
 							
-							helper.dnsLookUp(data.address).then( ipObject => {
+							helper.safeDNSLookUp(data.address).then( ipObject => {
 
 								//check this peer already exists in the config.
 								//if it does, then igore.
@@ -194,6 +215,17 @@ async function main(){
 				iota.saveConfig();
 			});
 
+			/**
+			 * Login page
+			 */
+
+			s.on('Login', function (data) {
+				if(data.password === iota.config.password && data.username === iota.config.username)
+					s.emit('LoginResult', {status: 'successed', uid: iota.config.uid});
+				else
+					s.emit('LoginResult', { status: 'failed' });
+			});
+
 		});
 
 		// Create IOTA instance directly with provider
@@ -201,11 +233,13 @@ async function main(){
 		setInterval(function () {
 			// now you can start using all of the functions
 			iota.getNeighbours();
-		}, configObject.refresh * 1000 || 10000);
+		}, iota.config.refresh * 1000 || 10000);
 
 		iota.getSystemInfo();
 		iota.getNeighbours();
 		iota.initialisePeer();
+		iota.getIRIVersion();
+
 
 		setInterval(function(){
 			iota.getSystemInfo();
@@ -222,3 +256,5 @@ async function main(){
 }
 
 main();
+
+

@@ -23,44 +23,44 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   
  <body>
-   
-<div id="aside" class="app-aside modal fade nav-expand">
-<div class="left navside black dk" layout="column">
-  <div class="navbar no-radius">
-    <!-- brand -->
-    <a class="navbar-brand">
-
-   
-      <a href="http://iota.org/" target="_blank" ><span class="m-t-lg"><img src="/img/logo.png" alt="..." class="w-60 r"></span> </a>
-      <h5 class="text-center">Peer Manager</h5>
 
 
-   
-    </a>
-    <!-- / brand -->
+<nav id="navbar" class="navbar navbar-black">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">
+        <img src="/img/logo_nav.png" alt="IOTA Friend" class="w-60 r">
+      </a> 
+    </div>
+      <ul class="nav navbar-nav navbar-left">
+        <li>
+          <a class="" href="https://github.com/bealox/iota-fd" target="_blank"><i class="fa fa-github" aria-hidden="true"></i>
+Github</a>
+        </li>
+      </ul>
+      
+
+      <ul class="nav navbar-nav navbar-right">
+        <li v-if="loggedIn === true">
+          <a class="" href="/logout">Sign Out</a>
+        </li>
+        <li v-else>
+          <a class="" href="/login">Sign In</a>
+        </li>
+      </ul>
+
+      <div class="navbar-form navbar-right" v-if="loggedIn === true">
+        <div class="form-group">
+          <input type="text" class="form-control" v-model="address" placeholder="udp://11.22.33.44:18400">
+        </div>
+        <button type="submit" v-on:click="addPeer" class="btn btn-success">Add Peer</button>
+      </div>
   </div>
-  <div flex-no-shrink="">
-  </div>
-  <div flex="" class="hide-scroll mt-20">
-    <nav class="scroll nav-stacked nav-active-primary text-center">
-        <h6><a class="h6" href="https://github.com/akashgoswami/ipm" target="_blank" >Github</a></h6>
-    </nav>
-  </div>
-</div>
-</div>
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
+</nav>
    
     <div class="app-content p-l">
 	  <div class="row">
+        <h3 class="header"><i class="fa fa-info-circle" aria-hidden="true"></i>System Information</h3>
 	      <div id="systeminfo">
 	        
 	      </div>
@@ -68,6 +68,7 @@
 	  </div>
 	  
 	  <div class="row">
+      <h3 class="header"><i class="fa fa-area-chart" aria-hidden="true"></i>Peer Information</h3>
 	      <div id="peers">
 	        
 	      </div>
